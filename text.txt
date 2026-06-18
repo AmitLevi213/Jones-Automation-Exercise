@@ -1,0 +1,34 @@
+Security problems:
+- No CVV field — banks will reject payments without it.
+- Card number collected directly on the page — should use Stripe/PayPal so raw card data never hits company servers (PCI risk).
+- No input masking or HTTPS indicator on the card number field.
+
+Usability problems:
+- Amount shows "30.00" with no currency symbol.
+- Form tells users what NOT to type (no dashes/spaces) instead of just cleaning it up automatically.
+- Card type requires manual selection — modern forms auto-detect from the number.
+- Month/Year default to "Select…" with no validation reminder.
+- No description of what's being purchased.
+
+Functional problems:
+- No clear error messages when fields are wrong or empty.
+- "Cancel" button behavior is ambiguous — could lose user's data.
+
+Layout problems:
+- Two-column layout with no logical top-to-bottom order — eye jumps around.
+- Field widths are inconsistent and don't reflect expected input length.
+- Related fields (card details, address) aren't visually grouped.
+- Labels and required (*) stars are not neatly aligned.
+
+Test cases:
+1. Empty required fields → expect form blocks submission with per-field error messages.
+2. Invalid card number (letters / too few digits) → expect "Please enter a valid card number."
+3. Expired card date → expect "Card is expired" error, submission blocked.
+
+Recommended fix for the most severe issue:
+Most severe bug: form collects raw card data directly, with no CVV field.
+Solution: replace the custom card fields with a hosted payment provider (Stripe, Braintree, or PayPal).
+- Card data goes straight to the provider — never touches company servers, eliminating the PCI liability.
+- CVV field, card-type detection, number formatting, and validation are included out of the box.
+- Their pre-built form components also fix the layout/UX issues at the same time.
+Bottom line: don't build payment handling yourself — use a certified provider.

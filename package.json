@@ -1,0 +1,16 @@
+{
+  "name": "jones-automation-exercise",
+  "version": "1.0.0",
+  "description": "Playwright automation for https://test.netlify.app/ - fills the contact form, takes a screenshot, optionally changes the employee count, submits, and logs when the thank-you page is reached",
+  "license": "ISC",
+  "author": "AmitLevi213",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "test": "node src/index.js",
+    "start": "node src/index.js"
+  },
+  "dependencies": {
+    "playwright": "^1.61.0"
+  }
+}
