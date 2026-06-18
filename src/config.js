@@ -1,7 +1,8 @@
 export const config = {
   url: 'https://test.netlify.app/',
-  headless: false,
-  slowMo: 400,
+  headless: process.env.HEADED ? true : false,
+  slowMo: process.env.HEADED ? 400 : 0,
+  actionTimeout: 10_000,
   screenshotPath: 'before-submit.png',
   formData: {
     name: 'John Smith',
