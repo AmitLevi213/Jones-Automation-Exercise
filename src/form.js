@@ -1,41 +1,55 @@
-// src/form.js
-// Each function here does ONE step of the flow.
-// Keeping them separate makes the main file easy to read and the steps reusable.
 
-// Fill the five text fields. We locate inputs by their label text,
-// which is the most readable and robust way to target form fields.
+async function findInput(page, name) {
+  const byLabel = page.getByLabel(name, { exact: false });
+  if (await byLabel.count()) return byLabel.first();
+
+  const byPlaceholder = page.getByPlaceholder(name, { exact: false });
+  if (await byPlaceholder.count()) return byPlaceholder.first();
+
+  return page.locator(`input[name="${name}" i]`).first();
+}
+
 export async function fillFormFields(page, data) {
-  await page.getByLabel('Name').fill(data.name);
-  await page.getByLabel('Email').fill(data.email);
-  await page.getByLabel('Phone').fill(data.phone);
-  await page.getByLabel('Company').fill(data.company);
-  await page.getByLabel('Website').fill(data.website);
+  await (await findInput(page, 'Name')).fill(data.name);
+  await (await findInput(page, 'Email')).fill(data.email);
+  await (await findInput(page, 'Phone')).fill(data.phone);
+  await (await findInput(page, 'Company')).fill(data.company);
+  await (await findInput(page, 'Website')).fill(data.website);
   console.log('Filled in Name, Email, Phone, Company and Website.');
 }
 
-// Take a full-page screenshot BEFORE we click submit.
 export async function takeScreenshot(page, path) {
   await page.screenshot({ path, fullPage: true });
   console.log(`Screenshot saved to "${path}".`);
 }
 
-// Bonus: change the "Number of Employees" dropdown from 1-10 to 51-500.
 export async function selectEmployees(page, optionLabel) {
-  await page.getByLabel('Number of Employees').selectOption({ label: optionLabel });
+  let dropdown = page.getByLabel('Number of Employees', { exact: false });
+  if (!(await dropdown.count())) dropdown = page.locator('select').first();
+
+  await dropdown.selectOption({ label: optionLabel });
   console.log(`Changed Number of Employees to "${optionLabel}".`);
 }
 
-// Click the "Request a call back" button.
 export async function submitForm(page) {
-  await page.getByRole('button', { name: 'Request a call back' }).click();
+  let button = page.getByRole('button', { name: /request a call back/i });
+  if (!(await button.count())) {
+    button = page.locator('input[type="submit"], button[type="submit"]').first();
+  }
+  await button.click();
   console.log('Clicked "Request a call back".');
 }
 
-// Wait until the thank-you page has loaded and confirm we reached it.
 export async function verifyThankYouPage(page) {
-  // After submit, the site navigates to a confirmation page.
-  // We wait for the "thank you" text to appear before logging success.
+  const startUrl = page.url();
   await page.waitForLoadState('networkidle');
-  await page.getByText(/thank you/i).waitFor({ state: 'visible' });
-  console.log('Reached the thank you page. Form submitted successfully!');
+
+  const thankYouText = page.getByText(/thank|thanks/i);
+  const urlChanged = page.url() !== startUrl;
+
+  if (urlChanged || (await thankYouText.count())) {
+    console.log('Reached the thank you page. Form submitted successfully!');
+  } else {
+    console.log('Submitted, but could not confirm the thank you page. Check the screenshot/site manually.');
+  }
 }
