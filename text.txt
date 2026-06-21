@@ -13,6 +13,9 @@ Usability problems:
 Functional problems:
 - No clear error messages when fields are wrong or empty.
 - "Cancel" button behavior is ambiguous — could lose user's data.
+-  Keyboard navigation not evaluated.
+-  Screen reader support unknown.
+-  Required fields may not be announced properly.
 
 Layout problems:
 - Two-column layout with no logical top-to-bottom order — eye jumps around.
